@@ -3,4 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools" tools:context=".SearchActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/menu_item_search"
+        android:title="@string/search_player"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
 </menu>
