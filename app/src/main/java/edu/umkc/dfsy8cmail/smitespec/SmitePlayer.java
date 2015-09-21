@@ -1,12 +1,15 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 /**
  * Created by Dan on 9/20/2015.
  */
-public class SmitePlayer {
+public class SmitePlayer implements Parcelable {
     private int mLevel;
     private int mLosses;
     private int mMasteryLevel;
@@ -14,6 +17,49 @@ public class SmitePlayer {
     private int mTeamId;
     private String mTeamName;
     private int mWins;
+
+
+    public SmitePlayer() {
+
+    }
+
+    protected SmitePlayer(Parcel in) {
+        mLevel = in.readInt();
+        mLosses = in.readInt();
+        mMasteryLevel = in.readInt();
+        mName = in.readString();
+        mTeamId = in.readInt();
+        mTeamName = in.readString();
+        mWins = in.readInt();
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(mLevel);
+        dest.writeInt(mLosses);
+        dest.writeInt(mMasteryLevel);
+        dest.writeString(mName);
+        dest.writeInt(mTeamId);
+        dest.writeString(mTeamName);
+        dest.writeInt(mWins);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    public static Creator<SmitePlayer> CREATOR = new Creator<SmitePlayer>() {
+        @Override
+        public SmitePlayer createFromParcel(Parcel in) {
+            return new SmitePlayer(in);
+        }
+
+        @Override
+        public SmitePlayer[] newArray(int size) {
+            return new SmitePlayer[size];
+        }
+    };
 
     public int getLevel() {
         return mLevel;

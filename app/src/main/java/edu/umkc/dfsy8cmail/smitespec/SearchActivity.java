@@ -1,6 +1,7 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -18,19 +19,22 @@ import org.json.*;
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
-    //private Context mContext;
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
-    SmitePlayer currentPlayer = new SmitePlayer();
+    //SmitePlayer currentPlayer = new SmitePlayer();
+    Context mContext;
+    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        //mContext = this;
+        mContext = this;
 
-        final SearchView searchView = (SearchView) searchItem.getActionView();
-
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+        // Handle search queries from search bar in layout
+        // This is done in same way as a search from the action bar
+        SearchView search_bar = (SearchView) findViewById(R.id.search_bar);
+        search_bar.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override
             public boolean onQueryTextSubmit(String query) {
@@ -61,6 +65,7 @@ public class SearchActivity extends AppCompatActivity {
                 JSONArray data = new JSONArray(player);
                 JSONObject jsonPlayer = data.getJSONObject(0);
                 // Parse json data into java object
+                SmitePlayer currentPlayer = new SmitePlayer();
                 currentPlayer.parsePlayer(jsonPlayer);
                 return currentPlayer;
             } catch (JSONException js) {
@@ -71,15 +76,18 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(SmitePlayer player) {
+        protected void onPostExecute(SmitePlayer currentPlayer) {
 
-            if (player == null) {
+            if (currentPlayer == null) {
                 Toast.makeText(getBaseContext(), "No player by that name", Toast.LENGTH_LONG).show();
                 // should previous player data be cleared here?
             }
             else {
-                Toast.makeText(getBaseContext(), "Player found", Toast.LENGTH_LONG).show();
+                //Toast.makeText(getBaseContext(), "Player found", Toast.LENGTH_SHORT).show();
                 // Load new activity for the player
+                Intent intent = new Intent(mContext, HomeActivity.class);
+                intent.putExtra(EXTRA_PLAYER_DATA, currentPlayer);
+                startActivity(intent);
             }
         }
     }
