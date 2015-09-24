@@ -17,6 +17,8 @@ public class SmitePlayer implements Parcelable {
     private int mTeamId;
     private String mTeamName;
     private int mWins;
+    private String mPlayerId;
+
 
 
     public SmitePlayer() {
@@ -31,6 +33,7 @@ public class SmitePlayer implements Parcelable {
         mTeamId = in.readInt();
         mTeamName = in.readString();
         mWins = in.readInt();
+        mPlayerId = in.readString();
     }
 
     @Override
@@ -42,6 +45,7 @@ public class SmitePlayer implements Parcelable {
         dest.writeInt(mTeamId);
         dest.writeString(mTeamName);
         dest.writeInt(mWins);
+        dest.writeString(mPlayerId);
     }
 
     @Override
@@ -113,9 +117,12 @@ public class SmitePlayer implements Parcelable {
         return mWins;
     }
 
-    public void setWins(int mWins) {
-        this.mWins = mWins;
-    }
+    public void setWins(int mWins) { this.mWins = mWins; }
+
+    public String getPlayerId() { return mPlayerId; }
+
+    public void setPlayerId(String mPlayerId) { this.mPlayerId = mPlayerId; }
+
 
     // Parses a json player object into java SmitePlayer object
     // throws a JSONException if parsing fails
@@ -127,5 +134,6 @@ public class SmitePlayer implements Parcelable {
         setTeamId(jsonPlayer.getInt("TeamId"));
         setTeamName(jsonPlayer.getString("Team_Name"));
         setWins(jsonPlayer.getInt("Wins"));
+        setPlayerId(jsonPlayer.getString("Id"));
     }
 }

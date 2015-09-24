@@ -56,9 +56,8 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected SmitePlayer doInBackground(String... params) {
             try {
-                // Retrieve player name from persistent storage
                 String query = params[0];
-                // Retrieve json data of player from Smite database
+                // Retrieve json data of player from Smite API
                 String player = smite.getPlayer(query);
                 Log.i(TAG, "Fetched player: " + player);
                 // Retrieve json array and get json object from array.  Player data only ever has 1 object in array
@@ -69,7 +68,7 @@ public class SearchActivity extends AppCompatActivity {
                 currentPlayer.parsePlayer(jsonPlayer);
                 return currentPlayer;
             } catch (JSONException js) {
-                // This may happen if player doesn't exist
+                // This will happen if player doesn't exist
                 Log.e(TAG, "Failed to parse JSON", js);
                 return null;
             }
@@ -88,6 +87,7 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(mContext, HomeActivity.class);
                 intent.putExtra(EXTRA_PLAYER_DATA, currentPlayer);
                 startActivity(intent);
+                finish();
             }
         }
     }
@@ -99,8 +99,11 @@ public class SearchActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
         MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+
+        // can the following commands be moved to onOptionsItemsSelected()?
         final SearchView searchView = (SearchView) searchItem.getActionView();
 
+        // Handle search action bar queries
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
 
             @Override

@@ -10,4 +10,7 @@
 
     <string name="title_activity_home">HomeActivity</string>
     <string name="player_name">Example</string>
+    <string name="player_stats_title">Player\'s Stats by Game Mode:</string>
+    <string name="friends_list">Friends</string>
+    <string name="clan_stats">Clan Stats</string>
 </resources>
