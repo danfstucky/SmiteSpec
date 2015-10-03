@@ -12,6 +12,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,14 +27,16 @@ import org.json.JSONObject;
 
 import java.util.List;
 
-public class HomeActivity extends AppCompatActivity {
+public class HomeActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
+    public static final String EXTRA_MODE = "edu.umkc.dfsy8cmail.smitespec.GAME_MODE";
     private static final String TAG = "HomeActivity";
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");  // It may be more efficient to pass this object b/w activities instead of creating new each time
     private RecyclerView mFriendRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private FriendAdapter mAdapter;
-
+    private SmitePlayer currentPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +45,23 @@ public class HomeActivity extends AppCompatActivity {
 
         // Receive extra data from search intent
         Intent intent = getIntent();
-        SmitePlayer currentPlayer = intent.getExtras().getParcelable(SearchActivity.EXTRA_PLAYER_DATA);
+        currentPlayer = intent.getExtras().getParcelable(SearchActivity.EXTRA_PLAYER_DATA);
 
-        // Populate page with player's data
+        // Populate page with player's data and buttons
         TextView player_name = (TextView) findViewById(R.id.player_name_value);
         player_name.setText(currentPlayer.getName());
+
+        ImageButton bConquest = (ImageButton) findViewById(R.id.button_conquest);
+        bConquest.setOnClickListener(this);
+
+        ImageButton bJoust = (ImageButton) findViewById(R.id.button_joust);
+        bJoust.setOnClickListener(this);
+
+        ImageButton bAssault = (ImageButton) findViewById(R.id.button_assault);
+        bAssault.setOnClickListener(this);
+
+        Button bClan = (Button) findViewById(R.id.button_clan);
+        bClan.setOnClickListener(this);
 
         // Add player friends list
         // Initialize recycler view
@@ -54,6 +71,43 @@ public class HomeActivity extends AppCompatActivity {
         // Retrieve the player's list of friends and update recycler view layout
         CurrentFriendsList friendsList = CurrentFriendsList.get(this.getBaseContext(), currentPlayer.getPlayerId());
         new FetchFriendsTask().execute(friendsList);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent;
+        Bundle extras = new Bundle();
+        extras.putParcelable(EXTRA_PLAYER_DATA, currentPlayer);
+        switch (v.getId()) {
+            case R.id.button_conquest:
+                Log.i(TAG, "conquest button2: " + R.id.button_conquest);
+                intent = new Intent(this, PlayerStatsActivity.class);
+                extras.putString(EXTRA_MODE, "Conquest");
+                intent.putExtras(extras);
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.button_joust:
+                intent = new Intent(this, PlayerStatsActivity.class);
+                extras.putString(EXTRA_MODE, "Joust");
+                intent.putExtras(extras);
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.button_assault:
+                intent = new Intent(this, PlayerStatsActivity.class);
+                extras.putString(EXTRA_MODE, "Assault");
+                intent.putExtras(extras);
+                startActivity(intent);
+                finish();
+                break;
+
+            case R.id.button_clan:
+                break;
+        }
+        Log.i(TAG, "v.getId= " + v.getId());
     }
 
     private class FetchFriendsTask extends AsyncTask<CurrentFriendsList, Void, CurrentFriendsList> {
@@ -96,12 +150,24 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     // RecyclerView functions for friends list
-    private class FriendHolder extends RecyclerView.ViewHolder {
+    private class FriendHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+        private SmiteFriend mFriend;
         public TextView mTitleTextView;
 
         public FriendHolder(View view) {
             super(view);
             mTitleTextView = (TextView) view;  // add .findViewById(R.id.friend_recycler_view) when expanding this to a layout.
+            view.setOnClickListener(this);
+        }
+
+        public void bindFriend(SmiteFriend friend) {
+            mFriend = friend;
+            mTitleTextView.setText(mFriend.getName());
+        }
+
+        @Override
+        public void onClick(View v) {
+            Toast.makeText(getBaseContext(), mFriend.getName() + " was clicked!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -123,7 +189,7 @@ public class HomeActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(FriendHolder holder, int position) {
             SmiteFriend friend = mFriends.get(position);
-            holder.mTitleTextView.setText(friend.getName());
+            holder.bindFriend(friend);
         }
 
         @Override
