@@ -22,7 +22,7 @@ public class PlayerStatsActivity extends AppCompatActivity {
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
     private SmitePlayer currentPlayer;
     private String gameMode;
-    private PlayerGodsList player_god_stats_list = PlayerGodsList.get(this.getBaseContext());
+    private PlayerGodsList player_god_stats_list = new PlayerGodsList();
     com.cr5315.jSmite.Smite.Queue queue;
 
 
@@ -70,6 +70,7 @@ public class PlayerStatsActivity extends AppCompatActivity {
         }
 
     }
+
 
     public Smite.Queue getQueue() {
         if (gameMode.equals("Conquest")) {

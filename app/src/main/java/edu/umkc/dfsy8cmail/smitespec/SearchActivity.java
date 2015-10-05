@@ -19,10 +19,11 @@ import org.json.*;
 public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
+    private static  final int REQUEST_CODE_SEARCH = 0;
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
     //SmitePlayer currentPlayer = new SmitePlayer();
     Context mContext;
-    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
+    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.search.PLAYER_DATA";
 
 
     @Override
@@ -86,7 +87,7 @@ public class SearchActivity extends AppCompatActivity {
                 // Load new activity for the player
                 Intent intent = new Intent(mContext, HomeActivity.class);
                 intent.putExtra(EXTRA_PLAYER_DATA, currentPlayer);
-                startActivity(intent);
+                startActivityForResult(intent, REQUEST_CODE_SEARCH);
                 finish();
             }
         }

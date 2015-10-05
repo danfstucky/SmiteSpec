@@ -1,5 +1,6 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.content.ComponentName;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
     public static final String EXTRA_MODE = "edu.umkc.dfsy8cmail.smitespec.GAME_MODE";
     private static final String TAG = "HomeActivity";
+    private static  final int REQUEST_CODE_HOME= 0;
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");  // It may be more efficient to pass this object b/w activities instead of creating new each time
     private RecyclerView mFriendRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -45,7 +47,13 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         // Receive extra data from search intent
         Intent intent = getIntent();
-        currentPlayer = intent.getExtras().getParcelable(SearchActivity.EXTRA_PLAYER_DATA);
+        String caller = this.getCallingActivity().getClassName();
+        Log.i(TAG, "Calling Activity: " + caller);
+        if (caller.equals("edu.umkc.dfsy8cmail.smitespec.SearchActivity")) {
+            currentPlayer = intent.getExtras().getParcelable(SearchActivity.EXTRA_PLAYER_DATA);
+        }else {
+            currentPlayer = intent.getExtras().getParcelable(HomeActivity.EXTRA_PLAYER_DATA);
+        }
 
         // Populate page with player's data and buttons
         TextView player_name = (TextView) findViewById(R.id.player_name_value);
@@ -69,7 +77,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mLayoutManager = new LinearLayoutManager(this);
         mFriendRecyclerView.setLayoutManager(mLayoutManager);
         // Retrieve the player's list of friends and update recycler view layout
-        CurrentFriendsList friendsList = CurrentFriendsList.get(this.getBaseContext(), currentPlayer.getPlayerId());
+        CurrentFriendsList friendsList = new CurrentFriendsList(currentPlayer.getPlayerId());
         new FetchFriendsTask().execute(friendsList);
     }
 
@@ -149,6 +157,46 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
+    private class FetchPlayerTask extends AsyncTask<String, Void, SmitePlayer>{
+
+        @Override
+        protected SmitePlayer doInBackground(String... params) {
+            try {
+                String query = params[0];
+                // Retrieve json data of player from Smite API
+                String player = smite.getPlayer(query);
+                Log.i(TAG, "Fetched player: " + player);
+                // Retrieve json array and get json object from array.  Player data only ever has 1 object in array
+                JSONArray data = new JSONArray(player);
+                JSONObject jsonPlayer = data.getJSONObject(0);
+                // Parse json data into java object
+                SmitePlayer friendPlayer = new SmitePlayer();
+                friendPlayer.parsePlayer(jsonPlayer);
+                return friendPlayer;
+            } catch (JSONException js) {
+                // This will happen if player doesn't exist
+                Log.e(TAG, "Failed to parse JSON", js);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(SmitePlayer friendPlayer) {
+
+            if (friendPlayer == null) {
+                Toast.makeText(getBaseContext(), "Friend cannot be found", Toast.LENGTH_LONG).show();
+                // should previous player data be cleared here?
+            }
+            else {
+                // Load new activity for the player
+                Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                intent.putExtra(EXTRA_PLAYER_DATA, friendPlayer);
+                startActivityForResult(intent, REQUEST_CODE_HOME);
+                finish();
+            }
+        }
+    }
+
     // RecyclerView functions for friends list
     private class FriendHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private SmiteFriend mFriend;
@@ -168,6 +216,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onClick(View v) {
             Toast.makeText(getBaseContext(), mFriend.getName() + " was clicked!", Toast.LENGTH_LONG).show();
+            new FetchPlayerTask().execute(mFriend.getPlayer_id());
         }
     }
 

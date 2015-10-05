@@ -7,13 +7,13 @@ import java.util.List;
 
 /**
  * Created by Dan on 10/3/2015.
- * Singleton class to hold a player's stats for every god
+ * Container class to hold a player's stats for every god
  */
 
 public class PlayerGodsList {
-    private static PlayerGodsList sPlayerGodsList;
+    //private static PlayerGodsList sPlayerGodsList;
     private List<PlayerGod> mGods;
-
+    /*
     public static PlayerGodsList get(Context context) {
         if (sPlayerGodsList == null) {
             sPlayerGodsList = new PlayerGodsList(context);
@@ -22,6 +22,10 @@ public class PlayerGodsList {
     }
 
     private PlayerGodsList(Context context) {
+        mGods = new ArrayList<PlayerGod>();
+    }
+    */
+    public PlayerGodsList() {
         mGods = new ArrayList<PlayerGod>();
     }
 
