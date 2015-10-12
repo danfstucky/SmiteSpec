@@ -33,7 +33,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
     public static final String EXTRA_MODE = "edu.umkc.dfsy8cmail.smitespec.GAME_MODE";
     private static final String TAG = "HomeActivity";
-    private static  final int REQUEST_CODE_HOME= 0;
+    private static  final int REQUEST_CODE_HOME= 1;
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");  // It may be more efficient to pass this object b/w activities instead of creating new each time
     private RecyclerView mFriendRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
@@ -146,13 +146,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(CurrentFriendsList friendsList) {
 
-            if (friendsList == null) {
-                Toast.makeText(getBaseContext(), "No friends", Toast.LENGTH_LONG).show();
-            }
-            else {
-                // Update UI with friends list
+            if (friendsList != null) {
                 updateFriendsUI(friendsList);
-                Toast.makeText(getBaseContext(), "You have friends!", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -192,7 +187,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 Intent intent = new Intent(getBaseContext(), HomeActivity.class);
                 intent.putExtra(EXTRA_PLAYER_DATA, friendPlayer);
                 startActivityForResult(intent, REQUEST_CODE_HOME);
-                finish();
             }
         }
     }

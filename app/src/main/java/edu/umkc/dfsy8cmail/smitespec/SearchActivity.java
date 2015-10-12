@@ -88,7 +88,6 @@ public class SearchActivity extends AppCompatActivity {
                 Intent intent = new Intent(mContext, HomeActivity.class);
                 intent.putExtra(EXTRA_PLAYER_DATA, currentPlayer);
                 startActivityForResult(intent, REQUEST_CODE_SEARCH);
-                finish();
             }
         }
     }

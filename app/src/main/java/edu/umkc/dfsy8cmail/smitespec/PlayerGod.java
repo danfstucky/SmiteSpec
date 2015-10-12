@@ -1,5 +1,8 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.content.Context;
+import android.graphics.drawable.Drawable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -7,6 +10,7 @@ import org.json.JSONObject;
  * Created by Dan on 10/3/2015.
  */
 public class PlayerGod {
+    private Context context;
     private int mAssists;
     private int mDeaths;
     private String mGodName;
@@ -17,8 +21,8 @@ public class PlayerGod {
     private String mQueue;
     private int mWins;
 
-    public PlayerGod() {
-
+    public PlayerGod(Context cont) {
+        context = cont;
     }
 
     // getters and setters
@@ -94,6 +98,22 @@ public class PlayerGod {
         this.mWins = mWins;
     }
 
+    public double getKD() {
+        if (mDeaths == 0) { return mKills; }
+        else { return (double)mKills/mDeaths; }
+    }
+
+    public double getWLPerc() {
+        if (mLosses == 0) { return 100; }
+        else { return ((double)mWins/(mWins+mLosses)) * 100; }
+    }
+
+    public int getImageID() {
+        String img = mGodName.toLowerCase();
+        int resID = context.getResources().getIdentifier(img, "drawable", context.getPackageName());
+        return resID;
+    }
+
     // Parses a json friend object into java PlayerGod object
     // throws a JSONException if parsing fails
     public void parse(JSONObject jsonPlayerGod) throws JSONException {
@@ -107,4 +127,5 @@ public class PlayerGod {
         setQueue(jsonPlayerGod.getString("Queue"));
         setWins(jsonPlayerGod.getInt("Wins"));
     }
+
 }

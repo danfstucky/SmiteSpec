@@ -15,4 +15,153 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/overall_wl"
+        android:id="@+id/overall_wl_label"
+        android:layout_below="@+id/game_mode"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="41dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/overall_kd"
+        android:id="@+id/overall_kd_label"
+        android:layout_below="@+id/overall_wl_label"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/overall_wl_value"
+        android:id="@+id/overall_wl_value"
+        android:layout_alignTop="@+id/overall_wl_label"
+        android:layout_toRightOf="@+id/overall_kd_label"
+        android:layout_toEndOf="@+id/overall_kd_label"
+        android:layout_marginLeft="43dp"
+        android:layout_marginStart="43dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/overall_kd_value"
+        android:id="@+id/overall_kd_value"
+        android:layout_alignTop="@+id/overall_kd_label"
+        android:layout_alignLeft="@+id/overall_wl_value"
+        android:layout_alignStart="@+id/overall_wl_value" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/fav_god_label"
+        android:id="@+id/fav_god_label"
+        android:layout_alignTop="@+id/imageView_fav_god"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/wl_god_label"
+        android:id="@+id/wl_god_label"
+        android:layout_marginTop="31dp"
+        android:layout_below="@+id/imageView_fav_god"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:text="@string/kd_god_label"
+        android:id="@+id/kd_god_label"
+        android:layout_alignBottom="@+id/imageView_kd_god"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="18dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/fav_god_value"
+        android:id="@+id/fav_god_value"
+        android:layout_alignTop="@+id/fav_god_label"
+        android:layout_toRightOf="@+id/overall_kd_value"
+        android:layout_toEndOf="@+id/overall_kd_value" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/wl_god_value"
+        android:id="@+id/wl_god_value"
+        android:layout_alignTop="@+id/wl_god_label"
+        android:layout_alignLeft="@+id/fav_god_value"
+        android:layout_alignStart="@+id/fav_god_value" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/kd_god_value"
+        android:id="@+id/kd_god_value"
+        android:layout_alignBaseline="@+id/kd_god_label"
+        android:layout_alignBottom="@+id/kd_god_label"
+        android:layout_alignLeft="@+id/wl_god_value"
+        android:layout_alignStart="@+id/wl_god_value" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView_fav_god"
+        android:src="@drawable/agni"
+        android:adjustViewBounds="true"
+        android:maxHeight="60dp"
+        android:maxWidth="60dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/overall_kd_label"
+        android:layout_toLeftOf="@+id/overall_kd_value"
+        android:layout_toStartOf="@+id/overall_kd_value"
+        android:cropToPadding="false" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView_wl_god"
+        android:src="@drawable/agni"
+        android:adjustViewBounds="true"
+        android:maxHeight="60dp"
+        android:maxWidth="60dp"
+        android:layout_below="@+id/imageView_fav_god"
+        android:layout_alignLeft="@+id/imageView_fav_god"
+        android:layout_alignStart="@+id/imageView_fav_god"
+        android:layout_marginTop="10dp" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView_kd_god"
+        android:src="@drawable/agni"
+        android:adjustViewBounds="true"
+        android:maxHeight="60dp"
+        android:maxWidth="60dp"
+        android:layout_below="@+id/imageView_wl_god"
+        android:layout_alignLeft="@+id/imageView_wl_god"
+        android:layout_alignStart="@+id/imageView_wl_god"
+        android:layout_marginTop="11dp" />
+
+
 </RelativeLayout>

@@ -16,4 +16,17 @@
     <string name="title_activity_player_stats">PlayerStatsActivity</string>
 
     <string name="game_mode">Game Mode</string>
+    <string name="overall_wl">Overall Win/Loss:</string>
+    <string name="overall_kd">Overall Kill/Death:</string>
+    <string name="overall_wl_value">0</string>
+    <string name="overall_kd_value">0</string>
+    <string name="fav_god_label">Most Played:</string>
+    <string name="wl_god_label">Most Wins:</string>
+    <string name="kd_god_label">Best K/D:</string>
+    <string name="fav_god_value">0</string>
+    <string name="wl_god_value">0</string>
+    <string name="kd_god_value">0</string>
+    <string name="title_activity_test">TestActivity</string>
+
+    <string name="hello_world">Hello world!</string>
 </resources>
