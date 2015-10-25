@@ -103,6 +103,11 @@ public class PlayerGod {
         else { return (double)mKills/mDeaths; }
     }
 
+    public String getKDString() {
+        if (mDeaths == 0) { return String.valueOf(mKills); }
+        else { return String.valueOf(mKills) + "/" + String.valueOf(mDeaths); }
+    }
+
     public double getWLPerc() {
         if (mLosses == 0) { return 100; }
         else { return ((double)mWins/(mWins+mLosses)) * 100; }

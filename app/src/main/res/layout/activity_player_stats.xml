@@ -22,10 +22,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/overall_wl"
         android:id="@+id/overall_wl_label"
+        android:layout_marginTop="8dp"
         android:layout_below="@+id/game_mode"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginTop="41dp" />
+        android:layout_alignParentStart="true" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -76,10 +76,10 @@
         android:textAppearance="?android:attr/textAppearanceMedium"
         android:text="@string/wl_god_label"
         android:id="@+id/wl_god_label"
-        android:layout_marginTop="31dp"
-        android:layout_below="@+id/imageView_fav_god"
+        android:layout_alignBottom="@+id/imageView_wl_god"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="19dp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -145,10 +145,10 @@
         android:adjustViewBounds="true"
         android:maxHeight="60dp"
         android:maxWidth="60dp"
+        android:layout_marginTop="5dp"
         android:layout_below="@+id/imageView_fav_god"
-        android:layout_alignLeft="@+id/imageView_fav_god"
-        android:layout_alignStart="@+id/imageView_fav_god"
-        android:layout_marginTop="10dp" />
+        android:layout_toLeftOf="@+id/overall_kd_value"
+        android:layout_toStartOf="@+id/overall_kd_value" />
 
     <ImageView
         android:layout_width="wrap_content"
@@ -158,10 +158,19 @@
         android:adjustViewBounds="true"
         android:maxHeight="60dp"
         android:maxWidth="60dp"
+        android:layout_marginTop="6dp"
         android:layout_below="@+id/imageView_wl_god"
         android:layout_alignLeft="@+id/imageView_wl_god"
-        android:layout_alignStart="@+id/imageView_wl_god"
-        android:layout_marginTop="11dp" />
+        android:layout_alignStart="@+id/imageView_wl_god" />
 
+    <android.support.v7.widget.RecyclerView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/god_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/imageView_kd_god"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true" />
 
 </RelativeLayout>

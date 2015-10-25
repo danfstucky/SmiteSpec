@@ -4,9 +4,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -16,6 +21,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class PlayerStatsActivity extends AppCompatActivity {
 
     private static final String TAG = "PlayerStatsActivity";
@@ -24,6 +31,9 @@ public class PlayerStatsActivity extends AppCompatActivity {
     private String gameMode;
     private PlayerGodsList player_god_stats_list = new PlayerGodsList(getBaseContext());
     com.cr5315.jSmite.Smite.Queue queue;
+    private RecyclerView mGodRecyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private GodAdapter mAdapter;
 
 
     @Override
@@ -37,11 +47,18 @@ public class PlayerStatsActivity extends AppCompatActivity {
         gameMode = intent.getStringExtra(HomeActivity.EXTRA_MODE);
         queue = getQueue();
 
+        // Initialize recycler view
+        mGodRecyclerView = (RecyclerView) findViewById(R.id.god_recycler_view);
+        mLayoutManager = new LinearLayoutManager(this);
+        mGodRecyclerView.setLayoutManager(mLayoutManager);
+
         //Load UI content
         new FetchGodRankTask().execute();
 
         TextView game_type = (TextView) findViewById(R.id.game_mode);
         game_type.setText(gameMode);
+
+
 
     }
 
@@ -66,6 +83,11 @@ public class PlayerStatsActivity extends AppCompatActivity {
         god_kd.setText(String.format("%.2f", player_god_stats_list.getKDGod().getKD()) + " K/D");
         ImageView god_kd_img = (ImageView) findViewById(R.id.imageView_kd_god);
         god_kd_img.setImageResource(player_god_stats_list.getKDGod().getImageID());
+
+        // set player god recyclerview
+        List<PlayerGod> gods = player_god_stats_list.getGodsStats();
+        mAdapter = new GodAdapter(gods);
+        mGodRecyclerView.setAdapter(mAdapter);
     }
 
     private class FetchGodRankTask extends AsyncTask<Void, Void, PlayerGodsList> {
@@ -113,6 +135,64 @@ public class PlayerStatsActivity extends AppCompatActivity {
         }
         return queue;
     }
+
+    // RecyclerView functions for player god stats list
+    private class GodHolder extends RecyclerView.ViewHolder {
+        //public TextView mTitleTextView;
+        private PlayerGod mGod;
+        private TextView kd_value;
+        private TextView wl_value;
+        private TextView assists_value;
+        private TextView matches_value;
+        private ImageView god_stats_img;
+
+        public GodHolder(View view) {
+            super(view);
+            kd_value = (TextView) view.findViewById(R.id.single_kd_value);
+            wl_value = (TextView) view.findViewById(R.id.single_wl_value);
+            assists_value = (TextView) view.findViewById(R.id.single_assists_value);
+            matches_value = (TextView) view.findViewById(R.id.single_matches_value);
+            god_stats_img = (ImageView) view.findViewById(R.id.imageView_stats_god);
+        }
+
+        public void bindGod(PlayerGod god) {
+            mGod = god;
+            //kd_value.setText(god.getKDString());
+            kd_value.setText(String.format("%.2f", god.getKD()));
+            wl_value.setText(String.format("%.1f", god.getWLPerc()) + "%");
+            assists_value.setText(String.valueOf(god.getAssists()));
+            matches_value.setText(String.valueOf(god.getMatches()));
+            god_stats_img.setImageResource(god.getImageID());
+        }
+    }
+
+    private class GodAdapter extends RecyclerView.Adapter<GodHolder> {
+        private List<PlayerGod> mGods;
+
+        public GodAdapter(List<PlayerGod> gods) {
+            mGods = gods;
+        }
+
+        @Override
+        public GodHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+            View view = layoutInflater
+                    .inflate(R.layout.god_stats_layout, parent, false);
+            return new GodHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(GodHolder holder, int position) {
+            PlayerGod god  = mGods.get(position);
+            holder.bindGod(god);
+        }
+
+        @Override
+        public int getItemCount() {
+            return mGods.size();
+        }
+    }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

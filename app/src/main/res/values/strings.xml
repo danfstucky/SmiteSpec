@@ -27,6 +27,14 @@
     <string name="wl_god_value">0</string>
     <string name="kd_god_value">0</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="single_kd_label">K/D:</string>
+    <string name="single_wl_label">Wins:</string>
+    <string name="single_assists_label">Assists:</string>
+    <string name="single_matches_label">Matches:</string>
+    <string name="single_kd_value">0/0</string>
+    <string name="single_wl_value">0.0</string>
+    <string name="single_assists_value">0</string>
+    <string name="single_matches_value">0</string>
 
     <string name="hello_world">Hello world!</string>
 </resources>
