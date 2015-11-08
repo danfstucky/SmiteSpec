@@ -1,6 +1,7 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -72,17 +73,35 @@ public class PlayerStatsActivity extends AppCompatActivity {
         TextView god_fav = (TextView)findViewById(R.id.fav_god_value);
         god_fav.setText(Integer.toString(player_god_stats_list.getFavGod().getMatches()) + " Matches");
         ImageView god_fav_img = (ImageView) findViewById(R.id.imageView_fav_god);
-        god_fav_img.setImageResource(player_god_stats_list.getFavGod().getImageID());
+        try {
+            god_fav_img.setImageResource(player_god_stats_list.getFavGod().getImageID());
+        } catch (Resources.NotFoundException e) {
+            Log.i(TAG, e.getMessage());
+            god_fav_img.setImageResource(R.drawable.no_god);
+        }
+
         // most successful god
         TextView god_wl = (TextView)findViewById(R.id.wl_god_value);
         god_wl.setText(String.format("%.1f", player_god_stats_list.getWinsGod().getWLPerc()) + "% Win");
         ImageView god_wl_img = (ImageView) findViewById(R.id.imageView_wl_god);
-        god_wl_img.setImageResource(player_god_stats_list.getWinsGod().getImageID());
+        try {
+            god_wl_img.setImageResource(player_god_stats_list.getWinsGod().getImageID());
+        } catch (Resources.NotFoundException e) {
+            Log.i(TAG, e.getMessage());
+            god_wl_img.setImageResource(R.drawable.no_god);
+        }
+
         // most skilled god
         TextView god_kd = (TextView)findViewById(R.id.kd_god_value);
         god_kd.setText(String.format("%.2f", player_god_stats_list.getKDGod().getKD()) + " K/D");
         ImageView god_kd_img = (ImageView) findViewById(R.id.imageView_kd_god);
-        god_kd_img.setImageResource(player_god_stats_list.getKDGod().getImageID());
+        try {
+            god_kd_img.setImageResource(player_god_stats_list.getKDGod().getImageID());
+        } catch (Resources.NotFoundException e) {
+            Log.i(TAG, e.getMessage());
+            god_kd_img.setImageResource(R.drawable.no_god);
+        }
+
 
         // set player god recyclerview
         List<PlayerGod> gods = player_god_stats_list.getGodsStats();
@@ -162,7 +181,12 @@ public class PlayerStatsActivity extends AppCompatActivity {
             wl_value.setText(String.format("%.1f", god.getWLPerc()) + "%");
             assists_value.setText(String.valueOf(god.getAssists()));
             matches_value.setText(String.valueOf(god.getMatches()));
-            god_stats_img.setImageResource(god.getImageID());
+            try {
+                god_stats_img.setImageResource(god.getImageID());
+            } catch (Resources.NotFoundException e) {
+                Log.i(TAG, e.getMessage());
+                god_stats_img.setImageResource(R.drawable.no_god);
+            }
         }
     }
 

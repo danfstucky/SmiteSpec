@@ -32,6 +32,8 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         mContext = this;
 
+        assert smite != null : "API key did not work";
+
         // Handle search queries from search bar in layout
         // This is done in same way as a search from the action bar
         SearchView search_bar = (SearchView) findViewById(R.id.search_bar);

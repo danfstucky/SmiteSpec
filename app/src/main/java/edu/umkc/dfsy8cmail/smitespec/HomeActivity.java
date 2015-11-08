@@ -2,6 +2,7 @@ package edu.umkc.dfsy8cmail.smitespec;
 
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -133,6 +134,15 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                     JSONObject jsonFriend = data.getJSONObject(i);
                     SmiteFriend friend = new SmiteFriend();
                     friend.parse(jsonFriend);
+                    // Retrieve online status of friend
+                    String friend_status_RawJSON = smite.getPlayerStatus(friend.getPlayer_id());
+                    Log.i(TAG, "Fetched friend status: " + friend_status_RawJSON);
+                    JSONArray status_data = new JSONArray(friend_status_RawJSON);
+                    JSONObject jsonStatus = status_data.getJSONObject(0);
+                    FriendStatus status = new FriendStatus(getBaseContext());
+                    status.parseStatus(jsonStatus);
+                    friend.setFriendStatus(status);
+                    Log.i(TAG, "Status: " + friend.getFriendStatus().getStatus());
                     playerFriends.addFriend(friend);
                 }
                 return playerFriends;
@@ -194,17 +204,28 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     // RecyclerView functions for friends list
     private class FriendHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private SmiteFriend mFriend;
-        public TextView mTitleTextView;
+        private TextView friend_name;
+        private TextView online_status;
+        private ImageView status_img;
 
         public FriendHolder(View view) {
             super(view);
-            mTitleTextView = (TextView) view;  // add .findViewById(R.id.friend_recycler_view) when expanding this to a layout.
             view.setOnClickListener(this);
+            friend_name = (TextView) view.findViewById(R.id.friend_name);
+            online_status = (TextView) view.findViewById(R.id.online_status);
+            status_img = (ImageView) view.findViewById(R.id.online_status_img);
         }
 
         public void bindFriend(SmiteFriend friend) {
             mFriend = friend;
-            mTitleTextView.setText(mFriend.getName());
+            friend_name.setText(mFriend.getName());
+            String status = mFriend.getFriendStatus().getStatus();
+            online_status.setText(status);
+            try {
+                status_img.setImageResource(mFriend.getFriendStatus().getImageID());
+            } catch (Resources.NotFoundException e) {
+                status_img.setImageResource(R.drawable.status_offline);
+            }
         }
 
         @Override
@@ -225,7 +246,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public FriendHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
             View view = layoutInflater
-                    .inflate(android.R.layout.simple_list_item_1, parent, false);
+                    .inflate(R.layout.friend_layout, parent, false);
             return new FriendHolder(view);
         }
 

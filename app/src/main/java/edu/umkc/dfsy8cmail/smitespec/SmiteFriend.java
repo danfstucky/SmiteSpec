@@ -9,6 +9,7 @@ import org.json.JSONObject;
 public class SmiteFriend {
     private String mName;
     private String mPlayer_id;
+    private FriendStatus mStatus;
 
     public SmiteFriend(){
 
@@ -28,6 +29,14 @@ public class SmiteFriend {
 
     public void setName(String name) {
         this.mName = name;
+    }
+
+    public void setFriendStatus(FriendStatus stat) {
+        mStatus = stat;
+    }
+
+    public FriendStatus getFriendStatus() {
+        return mStatus;
     }
 
     // Parses a json friend object into java SmiteFriend object

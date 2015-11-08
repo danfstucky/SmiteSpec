@@ -36,5 +36,7 @@
     <string name="single_assists_value">0</string>
     <string name="single_matches_value">0</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="status_on">In Game</string>
+    <string name="status_off">Offline</string>
+    <string name="status_lobby">Main Menu</string>
 </resources>

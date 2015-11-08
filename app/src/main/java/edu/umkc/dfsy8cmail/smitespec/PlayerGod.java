@@ -1,7 +1,7 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
+import android.content.res.Resources;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -113,10 +113,17 @@ public class PlayerGod {
         else { return ((double)mWins/(mWins+mLosses)) * 100; }
     }
 
-    public int getImageID() {
+    // Returns the drawable resource identifier of a god's icon
+    // Throws a NotFoundException if fails to find identifier.
+    public int getImageID() throws Resources.NotFoundException {
         String img = mGodName.toLowerCase();
         int resID = context.getResources().getIdentifier(img, "drawable", context.getPackageName());
-        return resID;
+        if (resID != 0) {
+            return resID;
+        } else {
+            Resources.NotFoundException e = new Resources.NotFoundException("failed to find " + img);
+            throw e;
+        }
     }
 
     // Parses a json friend object into java PlayerGod object
