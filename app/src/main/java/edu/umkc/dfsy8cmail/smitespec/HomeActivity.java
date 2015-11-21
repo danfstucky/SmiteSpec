@@ -1,6 +1,5 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -33,6 +32,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
     public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
     public static final String EXTRA_MODE = "edu.umkc.dfsy8cmail.smitespec.GAME_MODE";
+    public static final String EXTRA_CLAN_NAME = "edu.umkc.dfsy8cmail.smitespec.CLAN_NAME";
     private static final String TAG = "HomeActivity";
     private static  final int REQUEST_CODE_HOME= 1;
     Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");  // It may be more efficient to pass this object b/w activities instead of creating new each time
@@ -78,7 +78,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         mLayoutManager = new LinearLayoutManager(this);
         mFriendRecyclerView.setLayoutManager(mLayoutManager);
         // Retrieve the player's list of friends and update recycler view layout
-        CurrentFriendsList friendsList = new CurrentFriendsList(currentPlayer.getPlayerId());
+        FriendsList friendsList = new FriendsList(currentPlayer.getPlayerId());
         new FetchFriendsTask().execute(friendsList);
     }
 
@@ -114,36 +114,44 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.button_clan:
+                intent = new Intent(this, ClanActivity.class);
+                extras.putString(EXTRA_CLAN_NAME, currentPlayer.getTeamId());
+                intent.putExtras(extras);
+                startActivity(intent);
+                finish();
                 break;
         }
         Log.i(TAG, "v.getId= " + v.getId());
     }
 
-    private class FetchFriendsTask extends AsyncTask<CurrentFriendsList, Void, CurrentFriendsList> {
+    private class FetchFriendsTask extends AsyncTask<FriendsList, Void, FriendsList> {
 
         @Override
-        protected CurrentFriendsList doInBackground(CurrentFriendsList... params) {
+        protected FriendsList doInBackground(FriendsList... params) {
             try {
-                CurrentFriendsList playerFriends = params[0];
+                FriendsList playerFriends = params[0];
                 // Retrieve json data of player friends from Smite API
                 String friends_List_RawJSON = smite.getFriends(playerFriends.getPlayerId());
                 Log.i(TAG, "Fetched friends: " + friends_List_RawJSON);
-                // Retrieve json array and populate custom CurrentFriendsList object
+                // Retrieve json array and populate custom FriendsList object
                 JSONArray data = new JSONArray(friends_List_RawJSON);
                 for (int i=0; i < data.length(); i++) {
                     JSONObject jsonFriend = data.getJSONObject(i);
                     SmiteFriend friend = new SmiteFriend();
                     friend.parse(jsonFriend);
                     // Retrieve online status of friend
-                    String friend_status_RawJSON = smite.getPlayerStatus(friend.getPlayer_id());
-                    Log.i(TAG, "Fetched friend status: " + friend_status_RawJSON);
-                    JSONArray status_data = new JSONArray(friend_status_RawJSON);
-                    JSONObject jsonStatus = status_data.getJSONObject(0);
-                    FriendStatus status = new FriendStatus(getBaseContext());
-                    status.parseStatus(jsonStatus);
-                    friend.setFriendStatus(status);
-                    Log.i(TAG, "Status: " + friend.getFriendStatus().getStatus());
-                    playerFriends.addFriend(friend);
+                    String friend_name = friend.getName();
+                    if (!friend_name.equals("")) {
+                        String friend_status_RawJSON = smite.getPlayerStatus(friend.getName());
+                        Log.i(TAG, "Fetched friend status: " + friend_status_RawJSON);
+                        JSONArray status_data = new JSONArray(friend_status_RawJSON);
+                        JSONObject jsonStatus = status_data.getJSONObject(0);
+                        FriendStatus status = new FriendStatus(getBaseContext());
+                        status.parseStatus(jsonStatus);
+                        friend.setFriendStatus(status);
+                        Log.i(TAG, "Status: " + friend.getFriendStatus().getStatus());
+                        playerFriends.addFriend(friend);
+                    }
                 }
                 return playerFriends;
             } catch (JSONException js) {
@@ -154,7 +162,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         @Override
-        protected void onPostExecute(CurrentFriendsList friendsList) {
+        protected void onPostExecute(FriendsList friendsList) {
 
             if (friendsList != null) {
                 updateFriendsUI(friendsList);
@@ -211,7 +219,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public FriendHolder(View view) {
             super(view);
             view.setOnClickListener(this);
-            friend_name = (TextView) view.findViewById(R.id.friend_name);
+            friend_name = (TextView) view.findViewById(R.id.player_name);
             online_status = (TextView) view.findViewById(R.id.online_status);
             status_img = (ImageView) view.findViewById(R.id.online_status_img);
         }
@@ -246,7 +254,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         public FriendHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
             View view = layoutInflater
-                    .inflate(R.layout.friend_layout, parent, false);
+                    .inflate(R.layout.player_item_layout, parent, false);
             return new FriendHolder(view);
         }
 
@@ -262,8 +270,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    private void updateFriendsUI(CurrentFriendsList friendsList) {
-        List<SmiteFriend> friends = friendsList.getFriends();
+    private void updateFriendsUI(FriendsList friendsList) {
+        List<SmiteFriend> friends = friendsList.getPlayers();
 
         mAdapter = new FriendAdapter(friends);
         mFriendRecyclerView.setAdapter(mAdapter);

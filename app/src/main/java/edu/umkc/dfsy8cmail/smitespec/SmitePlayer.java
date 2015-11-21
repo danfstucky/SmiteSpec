@@ -14,7 +14,7 @@ public class SmitePlayer implements Parcelable {
     private int mLosses;
     private int mMasteryLevel;
     private String mName;
-    private int mTeamId;
+    private String mTeamId;
     private String mTeamName;
     private int mWins;
     private String mPlayerId;
@@ -30,7 +30,7 @@ public class SmitePlayer implements Parcelable {
         mLosses = in.readInt();
         mMasteryLevel = in.readInt();
         mName = in.readString();
-        mTeamId = in.readInt();
+        mTeamId = in.readString();
         mTeamName = in.readString();
         mWins = in.readInt();
         mPlayerId = in.readString();
@@ -42,7 +42,7 @@ public class SmitePlayer implements Parcelable {
         dest.writeInt(mLosses);
         dest.writeInt(mMasteryLevel);
         dest.writeString(mName);
-        dest.writeInt(mTeamId);
+        dest.writeString(mTeamId);
         dest.writeString(mTeamName);
         dest.writeInt(mWins);
         dest.writeString(mPlayerId);
@@ -97,11 +97,11 @@ public class SmitePlayer implements Parcelable {
         this.mName = mName;
     }
 
-    public int getTeamId() {
+    public String getTeamId() {
         return mTeamId;
     }
 
-    public void setTeamId(int mTeamId) {
+    public void setTeamId(String mTeamId) {
         this.mTeamId = mTeamId;
     }
 
@@ -131,7 +131,7 @@ public class SmitePlayer implements Parcelable {
         setLosses(jsonPlayer.getInt("Losses"));
         setMasteryLevel(jsonPlayer.getInt("MasteryLevel"));
         setName(jsonPlayer.getString("Name"));
-        setTeamId(jsonPlayer.getInt("TeamId"));
+        setTeamId(jsonPlayer.getString("TeamId"));
         setTeamName(jsonPlayer.getString("Team_Name"));
         setWins(jsonPlayer.getInt("Wins"));
         setPlayerId(jsonPlayer.getString("Id"));

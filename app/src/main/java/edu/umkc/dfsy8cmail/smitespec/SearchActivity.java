@@ -32,6 +32,7 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         mContext = this;
 
+        // make sure the key was valid and we have access to api
         assert smite != null : "API key did not work";
 
         // Handle search queries from search bar in layout

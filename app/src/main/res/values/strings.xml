@@ -39,4 +39,18 @@
     <string name="status_on">In Game</string>
     <string name="status_off">Offline</string>
     <string name="status_lobby">Main Menu</string>
+    <string name="title_activity_clan">ClanActivity</string>
+
+    <string name="clan_name">Clan Name</string>
+    <string name="clan_tag">[TAG]</string>
+    <string name="clan_wins_label">Wins:</string>
+    <string name="clan_wins_value">X</string>
+    <string name="clan_loss_label">Losses:</string>
+    <string name="clan_loss_value">X</string>
+    <string name="clan_founder_label">Founded By:</string>
+    <string name="clan_founder_value">Founder Name</string>
+    <string name="clan_num_members_label">Clan Size:</string>
+    <string name="clan_num_members_value">0</string>
+    <string name="clan_rating_label">Clan Rating:</string>
+    <string name="clan_rating_value">0</string>
 </resources>
