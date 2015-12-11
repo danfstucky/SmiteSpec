@@ -1,5 +1,6 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -27,7 +28,7 @@ import java.util.List;
 public class PlayerStatsActivity extends AppCompatActivity {
 
     private static final String TAG = "PlayerStatsActivity";
-    Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
+    private Smite smite;
     private SmitePlayer currentPlayer;
     private String gameMode;
     private PlayerGodsList player_god_stats_list = new PlayerGodsList(getBaseContext());
@@ -35,13 +36,15 @@ public class PlayerStatsActivity extends AppCompatActivity {
     private RecyclerView mGodRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private GodAdapter mAdapter;
+    private Context mContext = this;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player_stats);
-
+        API api = new API();
+        smite = new Smite(api.getDevID(), api.getAuthKey());
         // Retrieve extra data passed from HomeActivity
         Intent intent = getIntent();
         currentPlayer = intent.getExtras().getParcelable(HomeActivity.EXTRA_PLAYER_DATA);
@@ -221,7 +224,9 @@ public class PlayerStatsActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_player_stats, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        MenuBar menubar = new MenuBar(smite, menu, mContext);
+        menubar.createMenu();
         return true;
     }
 
@@ -232,11 +237,12 @@ public class PlayerStatsActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id) {
+            case R.id.menu_item_home:
+                new HomeBar(smite, mContext).redirectToHome(currentPlayer);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

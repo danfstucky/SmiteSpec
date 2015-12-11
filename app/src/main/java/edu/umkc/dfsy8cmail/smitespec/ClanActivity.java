@@ -1,5 +1,7 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.content.Context;
+import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
@@ -28,18 +30,26 @@ import java.util.List;
 public class ClanActivity extends AppCompatActivity {
 
     private static final String TAG = "ClanActivity";
-    Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
+    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
+    private static  final int REQUEST_CODE_HOME= 1;
+    private Smite smite;
 
     private RecyclerView mClanMemberRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private MemberAdapter mAdapter;
+    private Context mContext = this;
+    private SmitePlayer currentPlayer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_clan);
+        API api = new API();
+        smite = new Smite(api.getDevID(), api.getAuthKey());
 
-        String clan_id = getIntent().getStringExtra(HomeActivity.EXTRA_CLAN_NAME);
+        Intent intent = getIntent();
+        String clan_id = intent.getStringExtra(HomeActivity.EXTRA_CLAN_NAME);
+        currentPlayer = intent.getExtras().getParcelable(HomeActivity.EXTRA_PLAYER_DATA);
         Log.i(TAG, "Clan: " + clan_id);
         new FetchClanTask().execute(clan_id);
         // Initialize recycler view
@@ -84,25 +94,6 @@ public class ClanActivity extends AppCompatActivity {
             }
         }
 
-    }
-
-    private void updateClanStats(Clan current_clan) {
-        // Set values for Clan data:
-        // Clan name, tag, wins, losses, founder, # members, rating
-        TextView clan_name = (TextView) findViewById(R.id.clan_name);
-        clan_name.setText(current_clan.getClanName());
-        TextView clan_tag = (TextView) findViewById(R.id.clan_tag);
-        clan_tag.setText("[" + current_clan.getTag() + "]");
-        TextView wins = (TextView) findViewById(R.id.clan_wins_value);
-        wins.setText(String.valueOf(current_clan.getWins()));
-        TextView losses = (TextView) findViewById(R.id.clan_loss_value);
-        losses.setText(String.valueOf(current_clan.getLosses()));
-        TextView founder = (TextView) findViewById(R.id.clan_founder_value);
-        founder.setText(current_clan.getFounder());
-        TextView size = (TextView) findViewById(R.id.clan_num_members_value);
-        size.setText(String.valueOf(current_clan.getNumMembers()));
-        TextView rating = (TextView) findViewById(R.id.clan_rating_value);
-        rating.setText(String.valueOf(current_clan.getRating()));
     }
 
     private class FetchClanMembersTask extends AsyncTask<String, Void, ArrayList> {
@@ -153,6 +144,54 @@ public class ClanActivity extends AppCompatActivity {
         }
     }
 
+    private class FetchPlayerTask extends AsyncTask<String, Void, SmitePlayer>{
+
+        @Override
+        protected SmitePlayer doInBackground(String... params) {
+            try {
+                PlayerRetrieval retriever = new PlayerRetrieval(smite);
+                return retriever.fetchPlayer(params[0]);
+            } catch (JSONException js) {
+                // This will happen if player doesn't exist
+                Log.e(TAG, "Failed to parse JSON", js);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(SmitePlayer friendPlayer) {
+
+            if (friendPlayer == null) {
+                Toast.makeText(getBaseContext(), "Friend cannot be found", Toast.LENGTH_LONG).show();
+            }
+            else {
+                // Load new activity for the player
+                Intent intent = new Intent(getBaseContext(), HomeActivity.class);
+                intent.putExtra(EXTRA_PLAYER_DATA, friendPlayer);
+                startActivityForResult(intent, REQUEST_CODE_HOME);
+            }
+        }
+    }
+
+    private void updateClanStats(Clan current_clan) {
+        // Set values for Clan data:
+        // Clan name, tag, wins, losses, founder, # members, rating
+        TextView clan_name = (TextView) findViewById(R.id.clan_name);
+        clan_name.setText(current_clan.getClanName());
+        TextView clan_tag = (TextView) findViewById(R.id.clan_tag);
+        clan_tag.setText("[" + current_clan.getTag() + "]");
+        TextView wins = (TextView) findViewById(R.id.clan_wins_value);
+        wins.setText(String.valueOf(current_clan.getWins()));
+        TextView losses = (TextView) findViewById(R.id.clan_loss_value);
+        losses.setText(String.valueOf(current_clan.getLosses()));
+        TextView founder = (TextView) findViewById(R.id.clan_founder_value);
+        founder.setText(current_clan.getFounder());
+        TextView size = (TextView) findViewById(R.id.clan_num_members_value);
+        size.setText(String.valueOf(current_clan.getNumMembers()));
+        TextView rating = (TextView) findViewById(R.id.clan_rating_value);
+        rating.setText(String.valueOf(current_clan.getRating()));
+    }
+
     // RecyclerView functions for clan members list
     private class MemberHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private SmiteClanMember mMember;
@@ -182,8 +221,8 @@ public class ClanActivity extends AppCompatActivity {
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getBaseContext(), mMember.getName() + " was clicked!", Toast.LENGTH_LONG).show();
-            //new FetchPlayerTask().execute(mMember.getName());
+            Toast.makeText(getBaseContext(), mMember.getName() + " was clicked!", Toast.LENGTH_SHORT).show();
+            new FetchPlayerTask().execute(mMember.getName());
         }
     }
 
@@ -222,7 +261,9 @@ public class ClanActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_clan, menu);
+        getMenuInflater().inflate(R.menu.menu_home, menu);
+        MenuBar menubar = new MenuBar(smite, menu, mContext);
+        menubar.createMenu();
         return true;
     }
 
@@ -233,11 +274,12 @@ public class ClanActivity extends AppCompatActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id) {
+            case R.id.menu_item_home:
+                new HomeBar(smite, mContext).redirectToHome(currentPlayer);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

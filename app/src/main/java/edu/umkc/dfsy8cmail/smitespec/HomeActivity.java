@@ -1,5 +1,6 @@
 package edu.umkc.dfsy8cmail.smitespec;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.AsyncTask;
@@ -35,26 +36,22 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public static final String EXTRA_CLAN_NAME = "edu.umkc.dfsy8cmail.smitespec.CLAN_NAME";
     private static final String TAG = "HomeActivity";
     private static  final int REQUEST_CODE_HOME= 1;
-    Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");  // It may be more efficient to pass this object b/w activities instead of creating new each time
+    private Smite smite;
     private RecyclerView mFriendRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private FriendAdapter mAdapter;
     private SmitePlayer currentPlayer;
+    private Context mContext = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-
-        // Receive extra data from search intent
+        API api = new API();
+        smite = new Smite(api.getDevID(), api.getAuthKey());
+        // HomeActivity can receive intents from any Activity and MenuBar
         Intent intent = getIntent();
-        String caller = this.getCallingActivity().getClassName();
-        Log.i(TAG, "Calling Activity: " + caller);
-        if (caller.equals("edu.umkc.dfsy8cmail.smitespec.SearchActivity")) {
-            currentPlayer = intent.getExtras().getParcelable(SearchActivity.EXTRA_PLAYER_DATA);
-        }else {
-            currentPlayer = intent.getExtras().getParcelable(HomeActivity.EXTRA_PLAYER_DATA);
-        }
+        currentPlayer = intent.getExtras().getParcelable(EXTRA_PLAYER_DATA);
 
         // Populate page with player's data and buttons
         TextView player_name = (TextView) findViewById(R.id.player_name_value);
@@ -82,46 +79,39 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         new FetchFriendsTask().execute(friendsList);
     }
 
+
+
+
     @Override
     public void onClick(View v) {
-        Intent intent;
-        Bundle extras = new Bundle();
-        extras.putParcelable(EXTRA_PLAYER_DATA, currentPlayer);
-        switch (v.getId()) {
+        int button_id = v.getId();
+        switch (button_id) {
             case R.id.button_conquest:
-                Log.i(TAG, "conquest button2: " + R.id.button_conquest);
-                intent = new Intent(this, PlayerStatsActivity.class);
-                extras.putString(EXTRA_MODE, "Conquest");
-                intent.putExtras(extras);
-                startActivity(intent);
-                finish();
+                sendIntent(button_id, EXTRA_MODE, "Conquest");
                 break;
 
             case R.id.button_joust:
-                intent = new Intent(this, PlayerStatsActivity.class);
-                extras.putString(EXTRA_MODE, "Joust");
-                intent.putExtras(extras);
-                startActivity(intent);
-                finish();
+                sendIntent(button_id, EXTRA_MODE, "Joust");
                 break;
 
             case R.id.button_assault:
-                intent = new Intent(this, PlayerStatsActivity.class);
-                extras.putString(EXTRA_MODE, "Assault");
-                intent.putExtras(extras);
-                startActivity(intent);
-                finish();
+                sendIntent(button_id, EXTRA_MODE, "Assault");
                 break;
 
             case R.id.button_clan:
-                intent = new Intent(this, ClanActivity.class);
-                extras.putString(EXTRA_CLAN_NAME, currentPlayer.getTeamId());
-                intent.putExtras(extras);
-                startActivity(intent);
-                finish();
+                sendIntent(button_id, EXTRA_CLAN_NAME, currentPlayer.getTeamId());
                 break;
         }
         Log.i(TAG, "v.getId= " + v.getId());
+    }
+
+    private void sendIntent(int button_id, String key, String value) {
+        Bundle extras = new Bundle();
+        extras.putParcelable(EXTRA_PLAYER_DATA, currentPlayer);
+        Intent intent = (button_id == R.id.button_clan) ? new Intent(this, ClanActivity.class) : new Intent(this, PlayerStatsActivity.class);
+        extras.putString(key, value);
+        intent.putExtras(extras);
+        startActivity(intent);
     }
 
     private class FetchFriendsTask extends AsyncTask<FriendsList, Void, FriendsList> {
@@ -175,17 +165,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected SmitePlayer doInBackground(String... params) {
             try {
-                String query = params[0];
-                // Retrieve json data of player from Smite API
-                String player = smite.getPlayer(query);
-                Log.i(TAG, "Fetched player: " + player);
-                // Retrieve json array and get json object from array.  Player data only ever has 1 object in array
-                JSONArray data = new JSONArray(player);
-                JSONObject jsonPlayer = data.getJSONObject(0);
-                // Parse json data into java object
-                SmitePlayer friendPlayer = new SmitePlayer();
-                friendPlayer.parsePlayer(jsonPlayer);
-                return friendPlayer;
+                PlayerRetrieval retriever = new PlayerRetrieval(smite);
+                return retriever.fetchPlayer(params[0]);
             } catch (JSONException js) {
                 // This will happen if player doesn't exist
                 Log.e(TAG, "Failed to parse JSON", js);
@@ -198,7 +179,6 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
             if (friendPlayer == null) {
                 Toast.makeText(getBaseContext(), "Friend cannot be found", Toast.LENGTH_LONG).show();
-                // should previous player data be cleared here?
             }
             else {
                 // Load new activity for the player
@@ -238,7 +218,7 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onClick(View v) {
-            Toast.makeText(getBaseContext(), mFriend.getName() + " was clicked!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getBaseContext(), mFriend.getName() + " was clicked!", Toast.LENGTH_SHORT).show();
             new FetchPlayerTask().execute(mFriend.getPlayer_id());
         }
     }
@@ -282,6 +262,8 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_home, menu);
+        MenuBar menubar = new MenuBar(smite, menu, mContext);
+        menubar.createMenu();
         return true;
     }
 
@@ -292,11 +274,12 @@ public class HomeActivity extends AppCompatActivity implements View.OnClickListe
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch(id) {
+            case R.id.menu_item_home:
+                new HomeBar(smite, mContext).redirectToHome(currentPlayer);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-
-        return super.onOptionsItemSelected(item);
     }
 }

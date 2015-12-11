@@ -20,10 +20,9 @@ public class SearchActivity extends AppCompatActivity {
 
     private static final String TAG = "SearchActivity";
     private static  final int REQUEST_CODE_SEARCH = 0;
-    Smite smite = new Smite("1517", "4FA5E41C82DC4F718A00A3B074F22658");
-    //SmitePlayer currentPlayer = new SmitePlayer();
+    private Smite smite;
     Context mContext;
-    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.search.PLAYER_DATA";
+    public static final String EXTRA_PLAYER_DATA = "edu.umkc.dfsy8cmail.smitespec.PLAYER_DATA";
 
 
     @Override
@@ -32,6 +31,9 @@ public class SearchActivity extends AppCompatActivity {
         setContentView(R.layout.activity_search);
         mContext = this;
 
+        //hide API key in another file
+        API api = new API();
+        smite = new Smite(api.getDevID(), api.getAuthKey());
         // make sure the key was valid and we have access to api
         assert smite != null : "API key did not work";
 
@@ -60,17 +62,8 @@ public class SearchActivity extends AppCompatActivity {
         @Override
         protected SmitePlayer doInBackground(String... params) {
             try {
-                String query = params[0];
-                // Retrieve json data of player from Smite API
-                String player = smite.getPlayer(query);
-                Log.i(TAG, "Fetched player: " + player);
-                // Retrieve json array and get json object from array.  Player data only ever has 1 object in array
-                JSONArray data = new JSONArray(player);
-                JSONObject jsonPlayer = data.getJSONObject(0);
-                // Parse json data into java object
-                SmitePlayer currentPlayer = new SmitePlayer();
-                currentPlayer.parsePlayer(jsonPlayer);
-                return currentPlayer;
+                PlayerRetrieval retriever = new PlayerRetrieval(smite);
+                return retriever.fetchPlayer(params[0]);
             } catch (JSONException js) {
                 // This will happen if player doesn't exist
                 Log.e(TAG, "Failed to parse JSON", js);
@@ -83,7 +76,6 @@ public class SearchActivity extends AppCompatActivity {
 
             if (currentPlayer == null) {
                 Toast.makeText(getBaseContext(), "No player by that name", Toast.LENGTH_LONG).show();
-                // should previous player data be cleared here?
             }
             else {
                 //Toast.makeText(getBaseContext(), "Player found", Toast.LENGTH_SHORT).show();
@@ -101,6 +93,7 @@ public class SearchActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_search, menu);
 
+        /*
         MenuItem searchItem = menu.findItem(R.id.menu_item_search);
 
         // can the following commands be moved to onOptionsItemsSelected()?
@@ -122,6 +115,9 @@ public class SearchActivity extends AppCompatActivity {
                 return false;
             }
         });
+        */
+        MenuBar menubar = new MenuBar(smite, menu, mContext);
+        menubar.createMenu();
        return true;
 
     }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SmiteSpec</string>
 
+    <string name="home_menu">Player Home</string>
     <string name="search_player">Search Player</string>
     <string name="clear_search">Clear Search</string>
     <string name="search_hint">Search Player</string>
@@ -53,4 +54,5 @@
     <string name="clan_num_members_value">0</string>
     <string name="clan_rating_label">Clan Rating:</string>
     <string name="clan_rating_value">0</string>
+    <string name="clan_members">Members:</string>
 </resources>

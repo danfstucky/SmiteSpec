@@ -4,4 +4,14 @@
     tools:context="edu.umkc.dfsy8cmail.smitespec.HomeActivity">
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" app:showAsAction="never" />
+
+    <item android:id="@+id/menu_item_search"
+        android:title="@string/search_player"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="ifRoom" />
+
+    <item android:id="@+id/menu_item_home"
+        android:title="@string/home_menu"
+        android:icon="@mipmap/ic_home_white_24dp"
+        app:showAsAction="ifRoom" />
 </menu>
